@@ -1,98 +1,111 @@
-import requests
-from bs4 import BeautifulSoup
-import time
-import re
-import datetime
-from Helpers import remove_tags , process_articles
+import requests # for sending HTTP requests
+from bs4 import BeautifulSoup #  for web scraping
+import time # for time.sleep
+import re # for regular expressions
+import datetime # for date and time
+from Helpers import remove_tags , process_articles # for removing html tags and processing articles
 
-
-class Finance_business:
+# ==============================================================================================================================================
+class Finance_business: 
     def __init__(self, guardian_api_key, alphavantage_api_key, newsapi_key, gnews_api_key):
         '''
         This class is responsible for fetching news articles from finance and business sources
-        '''
-        self.guardian_api_key = guardian_api_key
-        self.alphavantage_api_key = alphavantage_api_key
-        self.newsapi_key = newsapi_key
-        self.gnews_api_key = gnews_api_key
-        self.duplicates_seuil = 100
-        self.max_consecutive_same_articles = 4
-        self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
+        Parameters:
+        ----------
+        guardian_api_key : str
+            The Guardian API key
+        alphavantage_api_key : str
+            The Alpha Vantage API key
+        newsapi_key : str
+            The News API key
+        gnews_api_key : str
+            The GNews API key
+        
+        '''
+        self.guardian_api_key = guardian_api_key # Guardian API key 
+        self.alphavantage_api_key = alphavantage_api_key # Alpha Vantage API key
+        self.newsapi_key = newsapi_key # News API key
+        self.gnews_api_key = gnews_api_key # GNews API key
+        self.duplicates_seuil = 100 # threshold for number of duplicate articles
+        self.max_consecutive_same_articles = 4 # threshold for number of consecutive same articles
+        # self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') # start date for fetching news articles
+      
+        self.from_date = (datetime.datetime.now() - datetime.timedelta(hours=12)).strftime('%Y-%m-%d') # start date for fetching news articles
     
 # ==============================================================================================================================================
 # ============================================== ALPHA VANTAGE API ===========================================================================================
 
-    def fetch_alphavantage_news(self): # Alpha vantage API
+    def fetch_alphavantage_news(self): # Alpha vantage API for finance news
         '''
-        This function fetches finance news articles from the Alpha Vantage API
+        This function fetches finance news articles from the Alpha Vantage API 
         '''
-        finance_news = []
-        url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=FOREX:USD&apikey={self.alphavantage_api_key}'
-        response = requests.get(url)
-        if response.status_code==200:
-            data = response.json()
+        finance_news = [] # list to store finance news articles
+        url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=FOREX:USD&apikey={self.alphavantage_api_key}' # url to fetch finance news
+        response = requests.get(url) # send a GET request to the url
+        if response.status_code==200: # if the response is successful
+            data = response.json() # parse the response as json
             try:
-                feeds = data['feed']
-                for feed in feeds:
-                    finance_news.append({'title': feed['title'], 'content': self.remove_tags(feed['summary'])})
-                time.sleep(1)
-            except(Exception): 
-                print("Error: Failed to retrieve finance news")
-        return process_articles(finance_news)
+                feeds = data['feed'] # get the feed data
+                for feed in feeds: # loop through the feeds
+                    finance_news.append({'title': feed['title'], 'content': self.remove_tags(feed['summary'])}) # append the title and content of the feed to the finance_news list
+                time.sleep(1) # sleep for 1 second
+            except(Exception):  # handle exceptions
+                print("Error: Failed to retrieve finance news") # print error message
+        return process_articles(finance_news) # return the processed finance news articles
     
 # ==============================================================================================================================================
 # ========================================= FORTUNE NEWS ================================================================================================
     
-    def fetch_fortune_news(self):
-        fortune_articles = []
-        topic = 'business'
-        source = 'fortune'
-        to = datetime.datetime.now().strftime('%Y-%m-%d')
+    def fetch_fortune_news(self): # Fortune API for finance news
+        fortune_articles = [] # list to store fortune news articles
+        topic = 'business' # topic of the news
+        source = 'fortune' # source of the news
+        to = datetime.datetime.now().strftime('%Y-%m-%d') # end date of the news
         url = f'https://newsapi.org/v2/everything?q={topic}&from={self.from_date}&to={to}&sources={source}&language=en&sortBy=popularity&pageSize=100&apiKey={self.newsapi_key}'
         publish_dates = set()  # to avoid duplicate articles
-        count_duplicates_per_request = 0
-        consecutive_same_articles = 0
+        count_duplicates_per_request = 0 # Track number of duplicate articles per request
+        consecutive_same_articles = 0 # Track consecutive iterations with same article count
 
         while True:
-            if len(fortune_articles) % 10 == 0:
-                print(f"number of articles retrieved so far is : {len(fortune_articles)}")
-            response = requests.get(url)
-            if response.status_code == 200:
-                data = response.json()
-                articles = data.get('articles', [])
-                previous_article_count = len(fortune_articles)
-                for article in articles:
-                    title = article['title']
-                    content = self.scrape_article_fortune(article['url'])
-                    if content is None:
-                        break
-                    content = remove_tags(content) if content else None
-                    if content:
-                        publish_date = article['publishedAt']
-                        if publish_date not in publish_dates:
-                            publish_dates.add(publish_date)
-                            fortune_articles.append({'title': title, 'content': content, 'publishdate': publish_date})
-                        else:
-                            count_duplicates_per_request += 1
-                            continue
+            if len(fortune_articles) % 10 == 0: # Print number of articles retrieved so far
+                print(f"number of articles retrieved so far is : {len(fortune_articles)}") # print message to console 
+            response = requests.get(url) # send a GET request to the url
+            if response.status_code == 200: # if the response is successful
+                data = response.json() # parse the response as json
+                articles = data.get('articles', []) # get the articles data
+                previous_article_count = len(fortune_articles) # Store previous article count
+                for article in articles: # loop through the articles
+                    title = article['title'] # get the title of the article
+                    content = self.scrape_article_fortune(article['url']) # get the content of the article
+                    if content is None: # if the content is None
+                        break # break the loop
+                    content = remove_tags(content) if content else None # remove html tags from the content
+                    if content: # if the content is not None
+                        publish_date = article['publishedAt']   # get the publish date of the article
+                        if publish_date not in publish_dates: # if the publish date is not in the publish dates set
+                            publish_dates.add(publish_date) # add the publish date to the publish dates set
+                            fortune_articles.append({'title': title, 'content': content, 'publishdate': publish_date}) # append the title, content and publish date of the article to the fortune_articles list
+                        else: # if the publish date is in the publish dates set
+                            count_duplicates_per_request += 1 # increment the count_duplicates_per_request by 1
+                            continue # continue to the next iteration
 
-                if previous_article_count == len(fortune_articles):
-                    consecutive_same_articles += 1
-                if consecutive_same_articles >= self.max_consecutive_same_articles:
-                    break
-                if count_duplicates_per_request > self.duplicates_seuil:
+                if previous_article_count == len(fortune_articles): # Check for consecutive iterations with same number of articles
+                    consecutive_same_articles += 1 # increment the consecutive_same_articles by 1
+                if consecutive_same_articles >= self.max_consecutive_same_articles: # Replace with desired threshold
+                    break # break the loop
+                if count_duplicates_per_request > self.duplicates_seuil: # if the count_duplicates_per_request is greater than the duplicates_seuil
                     print(f"Number of duplicate articles retrieved from fortune news source is : {count_duplicates_per_request} , breaking ...")
-                    break
+                    break # break the loop
                 time.sleep(1)
             else:
                 print(f"Failed to retrieve data from fortune news source:", response.status_code)
                 break
         return process_articles(fortune_articles)
 
-
-    def scrape_article_fortune(self ,url):
-        try:
+    # Function to scrape article content from Fortune website
+    def scrape_article_fortune(self ,url): # function to scrape article content from Fortune website
+        try: # try block
             # Send a GET request to the URL
             response = requests.get(url)
             response.raise_for_status()  # Raise an exception for HTTP errors
@@ -124,7 +137,7 @@ class Finance_business:
             return None      
         
 # ============================================= GNEWS API ============================================================================================
-   
+    # Function to fetch finance news articles from the GNews API
     def fetch_gnews_articles(self):
         '''
         This function fetches finance news articles from the GNews API
@@ -132,58 +145,58 @@ class Finance_business:
         to = datetime.datetime.now().strftime('%Y-%m-%d')
         url = (f'https://gnews.io/api/v4/search?'
                f'from={self.from_date}&to={to}&'
-               'lang=en&country=us&max=100&apikey=' + self.gnews_api_key)
+               'lang=en&country=us&max=100&apikey=' + self.gnews_api_key) 
         GNews_articles =[]
         publish_dates=set() # to avoid duplicate articles
-        count_duplicates_per_request=0
-        consecutive_same_articles = 0
-        while True and len(GNews_articles)<100:
-            print(f"number of articles retrieved so far is : {len(GNews_articles)}")
-            response = requests.get(url)
-            if response.status_code == 200:
-                data = response.json()
-                articles = data['articles']
-                previous_article_count = len(GNews_articles)
-                for article in articles:
-                    content = self.scrape_article_content_gnews(article['url'])
-                    if content is None:
-                        break
-                    content = remove_tags(content)
-                    print(content)
+        count_duplicates_per_request=0 # Track number of duplicate articles per request
+        consecutive_same_articles = 0 # Track consecutive iterations with same article count
+        while True and len(GNews_articles)<100: # Loop until 100 articles are retrieved
+            print(f"number of articles retrieved so far is : {len(GNews_articles)}") # Print number of articles retrieved so far
+            response = requests.get(url) # Send a GET request to the URL
+            if response.status_code == 200: # If the response is successful
+                data = response.json() # Parse the response as JSON
+                articles = data['articles'] # Get the articles data
+                previous_article_count = len(GNews_articles) # Store previous article count
+                for article in articles: # Loop through the articles
+                    content = self.scrape_article_content_gnews(article['url']) # Get the content of the article
+                    if content is None: # If the content is None
+                        break # Break the loop
+                    content = remove_tags(content) # Remove HTML tags from the content
+                    print(content) # Print the content
                     print("=====================================================================================================")
-                    publish_date=article['publishedAt']
-                    if publish_date not in publish_dates:
-                        publish_dates.add(publish_date)
+                    publish_date=article['publishedAt'] # Get the publish date of the article
+                    if publish_date not in publish_dates: # If the publish date is not in the publish dates set
+                        publish_dates.add(publish_date) # Add the publish date to the publish dates set
                         GNews_articles.append({"title":article['title'] ,"content":content , "publishdate":article['publishedAt'] })
-                    else:
-                        count_duplicates_per_request+=1
-                        continue
+                    else: # If the publish date is in the publish dates set
+                        count_duplicates_per_request+=1 # Increment the count_duplicates_per_request by 1
+                        continue # Continue to the next iteration
 
                     # Check for consecutive iterations with same number of articles
-                if previous_article_count == len(GNews_articles):
-                    consecutive_same_articles += 1
+                if previous_article_count == len(GNews_articles):   # Check for consecutive iterations with same number of articles
+                    consecutive_same_articles += 1 # Increment the consecutive_same_articles by 1
                 if consecutive_same_articles >= self.max_consecutive_same_articles:  # Replace with desired threshold
-                    break 
+                    break  # Break the loop
 
-                if count_duplicates_per_request>self.duplicates_seuil:
-                    break
+                if count_duplicates_per_request>self.duplicates_seuil:  # If the count_duplicates_per_request is greater than the duplicates_seuil
+                    break # Break the loop
             else:
-                print("Failed to retrieve data:", response.status_code)
-                break
+                print("Failed to retrieve data:", response.status_code) # Print error message
+                break # Break the loop
         return process_articles(GNews_articles)
 
-    def scrape_article_content_gnews(self , url):
+    def scrape_article_content_gnews(self , url): # Function to scrape article content from GNews API
         # Fetch the HTML content of the webpage
-        response = requests.get(url)
-        html_content = response.text
+        response = requests.get(url) # Send a GET request to the URL
+        html_content = response.text # Get the HTML content of the webpage
 
         # Parse the HTML content using BeautifulSoup
-        soup = BeautifulSoup(html_content, 'html.parser')
+        soup = BeautifulSoup(html_content, 'html.parser') # Parse the HTML content using BeautifulSoup
 
         # Find all <article> tags and extract the text inside them
-        article_tags = soup.find_all('article')
-        article_text = ''
-        for article in article_tags:
+        article_tags = soup.find_all('article') # Find all <article> tags
+        article_text = '' # Initialize an empty string to store the article text
+        for article in article_tags: # Loop through each article tag
             # Remove any unnecessary tags and clean up the text
             cleaned_text = article.get_text(strip=True)
             # Append the cleaned text to the article_text variable
@@ -192,6 +205,7 @@ class Finance_business:
         return article_text.strip()
 # ==============================================================================================================================================
 # ========================================= Engadget NEWS ================================================================================================
+    # Function to fetch finance news articles from the Engadget API
     def fetch_engadget_news(self):
         to = datetime.datetime.now().strftime('%Y-%m-%d')
         url=f'https://newsapi.org/v2/everything?domains=engadget.com&from={self.from_date}&to={to}&apiKey={self.newsapi_key}'
@@ -236,7 +250,7 @@ class Finance_business:
                 break
         return process_articles(Engadget_articles)
     
-    
+    # Function to scrape article content from Engadget website
     def scrape_article_engadget(self, url):
         try:
             # Fetch the HTML content of the webpage
@@ -269,6 +283,7 @@ class Finance_business:
             return None
 # ==============================================================================================================================================
 # =============================== FORBES ===============================================================================================================
+    # Function to fetch finance news articles from the Forbes API
     def fetch_forbes_news(self):
         '''
         This function fetches finance news articles from the Forbes API
@@ -316,7 +331,7 @@ class Finance_business:
                 print(f"Number of total articles retrieved from fortune news source is : {len(forbes_articles)}")
                 break
         return process_articles(forbes_articles)
-    
+    # Function to scrape article content from Forbes website
     def scrape_article_forbes(self, url):
         try:
             # Fetch the HTML content of the webpage
@@ -352,7 +367,8 @@ class Finance_business:
             return None
         
 # ================================================================================================================================================================================
-# ================================================================================================================================================================================
+# ===================================== CNBC NEWS ===========================================================================================================================================
+    # Function to fetch finance news articles from the CNBC API
     def fetch_cnbc_news(self):
         '''
         This function fetches finance news articles from the CNBC API
@@ -397,7 +413,7 @@ class Finance_business:
                 print(f"Number of total articles retrieved from cnbc news source is : {len(cnbc_articles)}")
                 break
         return process_articles(cnbc_articles)
-    
+    # Function to scrape article content from CNBC website
     def scrape_article_cnbc(self, url):
         try:
             # Fetch the HTML content of the webpage
@@ -437,6 +453,7 @@ class Finance_business:
         
 # ================================================================================================================================================================================
 # ===================================== COIN DESK NEWS ===========================================================================================================================================
+    # Function to fetch finance news articles from the CoinDesk API
     def fetch_coindesk_news(self):
         '''
         This function fetches finance news articles from the CoinDesk API
@@ -479,7 +496,7 @@ class Finance_business:
             else:
                 break
         return process_articles(coindesk_articles)
-    
+    # Function to scrape article content from CoinDesk website
     def scrape_article_coindesk(self, url):
         """
             Scrapes text from the main content area of an article webpage.
@@ -523,6 +540,7 @@ class Finance_business:
             return None
 # ================================================================================================================================================================================
 # ==================================== bitcoinist NEWS ============================================================================================================================================
+    # Function to fetch finance news articles from the Bitcoinist API
     def fetch_bitcoinist_news(self):
         '''
         This function fetches finance news articles from the Bitcoinist API
@@ -565,7 +583,7 @@ class Finance_business:
             else:
                 break
         return process_articles(bitcoinist_articles)
-    
+    # Function to scrape article content from Bitcoinist website
     def scrape_article_bitcoinist(self, url):
         try:
             # Fetch the HTML content of the webpage
@@ -599,6 +617,7 @@ class Finance_business:
         
 # ================================================================================================================================================================================
 # ================================ INVESTING NEWS ================================================================================================================================================
+    # Function to fetch finance news articles from the Investing API
     def fetch_investing_news(self):
         '''
         This function fetches finance news articles from the Investing API
@@ -642,7 +661,7 @@ class Finance_business:
             else:
                 break
         return process_articles(investing_articles)
-    
+    # Function to scrape article content from Investing website
     def scrape_article_investing(self, url):
          
         try:
@@ -828,7 +847,8 @@ class Finance_business:
             return None
         
 # ================================================================================================================================================================================
-        
+# ===================================== USA TODAY NEWS ============================================================================================================================================
+    # Function to fetch finance news articles from the USA Today API     
     def fetch_usa_today(self):
         usa_today_articles = []
         f = (datetime.datetime.now() - datetime.timedelta(days=29)).strftime('%Y-%m-%d')
@@ -901,6 +921,7 @@ class Finance_business:
     
 # ================================================================================================================================================================================
 # ===================================== ambcrypto_news ============================================================================================================================================
+    # Function to fetch finance news articles from the Ambcrypto API
     def fetch_ambcrypto_news(self):
         ambcrypto_articles = []
         to = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -969,6 +990,9 @@ class Finance_business:
             print("Error:", response.status_code)
             return None
 
+# ================================================================================================================================================================================
+# ===================================== BUSINESS INSIDER NEWS ============================================================================================================================================
+    # Function to fetch finance news articles from the Business Insider API
     def fetch_businessinsider_news(self):
         business_insider_articles = []
         to = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -1043,7 +1067,8 @@ class Finance_business:
             print("Error:", response.status_code)
             return None
 # ================================================================================================================================================================================
-
+# ===================================== TECHCRUNCH NEWS ============================================================================================================================================
+    # Function to fetch finance news articles from the TechCrunch API
     def fetch_readwrite_news(self):
         readwrite_articles = []
         to = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -1092,7 +1117,7 @@ class Finance_business:
                 break
 
         return process_articles(readwrite_articles)
-    
+
     def scrape_article_readwrite(self, url):
         response = requests.get(url)
         if response.status_code == 200:
@@ -1113,3 +1138,6 @@ class Finance_business:
         else:
             print("Error:", response.status_code)
             return None
+
+# =========================================================================================================================================
+# =========================================================================================================================================
