@@ -83,7 +83,7 @@ sources = {
     'BBC': news_collector.fetch_bbc_news(), # Fetch news articles from the BBC
     'Al Jazeera': news_collector.fetch_al_jazeera_english(), # Fetch news articles from Al Jazeera
     'ABC': news_collector.fetch_abc_news(), # Fetch news articles from ABC News
-    'GNews': finance_business.fetch_gnews_articles(), # Fetch news articles from GNews
+    # 'GNews': finance_business.fetch_gnews_articles(), # Fetch news articles from GNews
     'CNN': news_collector.get_cnn_news(), # Fetch news articles from CNN
     'Fortune': finance_business.fetch_fortune_news(), # Fetch news articles from Fortune
     'ABC AU': news_collector.fetch_abc_news_au_articles(), # Fetch news articles from ABC News Australia

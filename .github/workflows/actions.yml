@@ -2,8 +2,8 @@ name: run collector.py
 
 on:
   schedule:
-    - cron: "0 10 * * *" # run the script every day at 10:00 AM UTC time
-    - cron: "0 22 * * *" # run the script every day at 10:00 PM UTC time
+    - cron: "0 09 * * *" # run the script every day at 09:00 AM UTC time
+    - cron: "0 21 * * *" # run the script every day at 09:00 PM UTC time
 
 jobs:
   build:
