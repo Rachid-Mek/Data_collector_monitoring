@@ -14,9 +14,9 @@ def get_base64(bin_file):
 # # the function to highlight the rows based on the upvote, downvote, and flag
 def highlight_rows(row):
     if row['upvote'] == 1:
-        return ['background-color: lightgreen'] * len(row)
+        return ['background-color: #4DA760'] * len(row)
     elif row['downvote'] == 1:
-        return ['background-color: lightcoral'] * len(row)
+        return ['background-color: #CE3030'] * len(row)
     elif row['flag'] == 1:
         return ['background-color: lightyellow'] * len(row)
     return ['background-color: black'] * len(row)
@@ -65,7 +65,8 @@ def sidebar():
             st.subheader('Article Counts') # Set the subheader of the first column
             vectors_count_today = vector_counts_df[vector_counts_df['date'] == current_date_str] # Get the vector counts for today
             if not vectors_count_today.empty: # Check if the vector counts for today is not empty
-                st.dataframe(vectors_count_today, use_container_width=True) # Show the vector counts for today
+                # st.dataframe(vectors_count_today, use_container_width=True) # Show the vector counts for today
+                st.success(f"Total number of articles today: {vectors_count_today['vector_count'].sum()}") # Show the total number of articles for today
             else:
                 st.success('No data available for the selected date.') # Show a success message if there is no data available for the selected date
 
@@ -110,10 +111,11 @@ def sidebar():
             st.write('No data available for articles over time.') # Show a message that there is no data available for articles over time
 # =============================================================================
     elif st.session_state['view'] == 'Daily': # Check if the view is Daily
+        st.title('Daily Article Counts') # Set the title of the page
         col1, col2 = st.columns(2) # Create two columns
         with col1: # Add content to the first column
             daily_articles_df = get_daily_article_counts() # Get the daily article counts
-            st.subheader(f'article count for {current_date_str}') # Set the subheader for the daily article count
+            st.subheader(f'Article count for {current_date_str}') # Set the subheader for the daily article count
             st.dataframe(daily_articles_df[daily_articles_df['date'] == current_date_str], use_container_width=True) # Show the daily article count for the current date
 
         with col2:
@@ -143,6 +145,7 @@ def sidebar():
             st.write(f'No data available for the selected source: {selected_source}') # Show a message that there is no data available for the selected source
 # =============================================================================
     elif st.session_state['view'] == 'QA': # Check if the view is QA
+        st.title('Generation model\'s Q&A Tracking') # Set the title of the page
         qa_df = get_qa() # Get the Q&A data
         total_votes = qa_df['upvote'].sum() + qa_df['downvote'].sum() # Compute the total votes
         if total_votes > 0: # Check if the total votes is greater than 0
@@ -154,9 +157,9 @@ def sidebar():
         number_of_flags = qa_df['flag'].sum() # Compute the number of flags
 
         col1, col2, col3, col4 = st.columns(4) # Create four columns
-        st.title('Base model Q&A Tracking') # Set the title of the page
+        st.title('Q&A Tracking') # Set the title of the page
         with col1: 
-            st.subheader('Q&A Accuracy Score') # Set the subheader for the Q&A accuracy score
+            st.subheader('Q&A Accuracy') # Set the subheader for the Q&A accuracy score
             if Accuracy < 50: # Check if the accuracy is less than 50
                 st.error(f"{Accuracy:.2f}%") # Show an error message if the accuracy is less than 50
             else: 
@@ -169,7 +172,7 @@ def sidebar():
                 st.success('{:.2f}'.format(avg_entailment_score)) # Show a success message
         with col3:  # Add content to the third column
             st.subheader('Total Questions') # Set the subheader for the total questions
-            st.write(f"Total Questions: {qa_df.shape[0]}") # Show the total questions
+            st.success(f"Total Questions: {qa_df.shape[0]}") # Show the total questions
         with col4: # Add content to the fourth column
             st.subheader('Number of Flags') # Set the subheader for the number of flags
             if number_of_flags == 0: 
@@ -194,7 +197,7 @@ def sidebar():
 custom_css = """
 <style>
     .stButton>button {
-        background-color: #A25F40;
+        background-color: #745423;
         color: white;
     }
     .css-1d391kg {
@@ -206,7 +209,7 @@ custom_css = """
     }
     div[role="region"] {
         background-color: black !important;
-        color: white !important;
+        color: black !important;
     }
 </style>
 """
