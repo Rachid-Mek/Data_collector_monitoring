@@ -145,7 +145,7 @@ def sidebar():
             st.write(f'No data available for the selected source: {selected_source}') # Show a message that there is no data available for the selected source
 # =============================================================================
     elif st.session_state['view'] == 'QA': # Check if the view is QA
-        st.title('Generation model\'s Q&A Tracking') # Set the title of the page
+        st.title('Generation model\'s Q&A Tracking ') # Set the title of the page
         qa_df = get_qa() # Get the Q&A data
         total_votes = qa_df['upvote'].sum() + qa_df['downvote'].sum() # Compute the total votes
         if total_votes > 0: # Check if the total votes is greater than 0
