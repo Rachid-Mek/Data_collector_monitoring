@@ -69,7 +69,7 @@ class Finance_business:
 
         while True:
             if len(fortune_articles) % 10 == 0: # Print number of articles retrieved so far
-                print(f"number of articles retrieved so far is : {len(fortune_articles)}") # print message to console 
+                print(f"number of articles retrieved so far from fortune is : {len(fortune_articles)}") # print message to console 
             response = requests.get(url) # send a GET request to the url
             if response.status_code == 200: # if the response is successful
                 data = response.json() # parse the response as json
@@ -151,7 +151,7 @@ class Finance_business:
         count_duplicates_per_request=0 # Track number of duplicate articles per request
         consecutive_same_articles = 0 # Track consecutive iterations with same article count
         while True and len(GNews_articles)<100: # Loop until 100 articles are retrieved
-            print(f"number of articles retrieved so far is : {len(GNews_articles)}") # Print number of articles retrieved so far
+            print(f"number of articles retrieved so far from gnews is : {len(GNews_articles)}") # Print number of articles retrieved so far
             response = requests.get(url) # Send a GET request to the URL
             if response.status_code == 200: # If the response is successful
                 data = response.json() # Parse the response as JSON
@@ -215,7 +215,7 @@ class Finance_business:
         consecutive_same_articles = 0
         while True :
             if(len(Engadget_articles)%10 == 0):
-                print(f"number of articles retrieved so far is : {len(Engadget_articles)}")
+                print(f"number of articles retrieved so far from engadget is : {len(Engadget_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -242,11 +242,11 @@ class Finance_business:
                     break
 
                 if count_duplicates_per_request>self.duplicates_seuil:
-                    print(f"Number of duplicate articles retrieved from fortune news source is : {count_duplicates_per_request} , breaking ...")
+                    print(f"Number of duplicate articles retrieved from engadget news source is : {count_duplicates_per_request} , breaking ...")
                     break
                 time.sleep(1)
             else:
-                print(f"Number of total articles retrieved from fortune news source is : {len(Engadget_articles)}")
+                print(f"Number of total articles retrieved from engadget news source is : {len(Engadget_articles)}")
                 break
         return process_articles(Engadget_articles)
     
@@ -298,7 +298,7 @@ class Finance_business:
         consecutive_same_articles = 0
         while True :
             if(len(forbes_articles)%10 == 0):
-                print(f"number of articles retrieved so far is : {len(forbes_articles)}")
+                print(f"number of articles retrieved so far from forbes is : {len(forbes_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -324,11 +324,11 @@ class Finance_business:
                 if consecutive_same_articles >= self.max_consecutive_same_articles:  # Replace with desired threshold
                     break
                 if count_duplicates_per_request>self.duplicates_seuil:
-                    print(f"Number of duplicate articles retrieved from fortune news source is : {count_duplicates_per_request} , breaking ...")
+                    print(f"Number of duplicate articles retrieved from forbes news source is : {count_duplicates_per_request} , breaking ...")
                     break
                 time.sleep(1)
             else:
-                print(f"Number of total articles retrieved from fortune news source is : {len(forbes_articles)}")
+                print(f"Number of total articles retrieved from forbes news source is : {len(forbes_articles)}")
                 break
         return process_articles(forbes_articles)
     # Function to scrape article content from Forbes website
@@ -380,6 +380,8 @@ class Finance_business:
         count_duplicates_per_request=0
         consecutive_same_articles = 0
         while True :
+            if(len(cnbc_articles)%10 == 0):
+                print(f"number of articles retrieved so far from CNBC is : {len(cnbc_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -465,6 +467,8 @@ class Finance_business:
         count_duplicates_per_request=0
         consecutive_same_articles = 0
         while True :
+            if len(coindesk_articles) % 10 == 0:
+                print(f"number of articles retrieved so far from coindesk is : {len(coindesk_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -480,7 +484,6 @@ class Finance_business:
                     if publish_date not in publish_dates:
                         publish_dates.add(publish_date)
                         coindesk_articles.append({'title': title, 'content': content, 'publishdate':publish_date})
-                        print(f"number of articles retrieved so far is : {len(coindesk_articles)} ...")
                     else:
                         count_duplicates_per_request+=1
                         continue
@@ -553,6 +556,8 @@ class Finance_business:
         consecutive_same_articles = 0
 
         while True :
+            if len(bitcoinist_articles) % 10 == 0:
+                print(f"number of articles retrieved so far from bitcoinist is : {len(bitcoinist_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -568,7 +573,6 @@ class Finance_business:
                     if publish_date not in publish_dates:
                         publish_dates.add(publish_date)
                         bitcoinist_articles.append({'title': title, 'content': content, 'publishdate':publish_date})
-                        print(f"number of articles retrieved so far is : {len(bitcoinist_articles)} ...")
                     else:
                         count_duplicates_per_request+=1
                         continue
@@ -629,6 +633,8 @@ class Finance_business:
         count_duplicates_per_request=0
         consecutive_same_articles = 0
         while True :
+            if len(investing_articles) % 10 == 0:
+                print(f"number of articles retrieved so far from investing is : {len(investing_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -644,7 +650,6 @@ class Finance_business:
                     if publish_date not in publish_dates:
                         publish_dates.add(publish_date)
                         investing_articles.append({'title': title, 'content': content, 'publishdate':publish_date})
-                        print(f"number of articles retrieved so far is : {len(investing_articles)} ...")
                     else:
                         count_duplicates_per_request+=1
                         continue
@@ -709,6 +714,8 @@ class Finance_business:
         count_duplicates_per_request=0
         consecutive_same_articles = 0 
         while True :
+            if len(coinjournal_articles) % 10 == 0:
+                print(f"number of articles retrieved so far from coinjournal is : {len(coinjournal_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -724,7 +731,6 @@ class Finance_business:
                     if publish_date not in publish_dates:
                         publish_dates.add(publish_date)
                         coinjournal_articles.append({'title': title, 'content': content, 'publishdate':publish_date})
-                        print(f"number of articles retrieved so far is : {len(coinjournal_articles)} ...")
                     else:
                         count_duplicates_per_request+=1
                         continue
@@ -777,7 +783,6 @@ class Finance_business:
         This function fetches finance news articles from the Wired API
         '''
         wired_articles = []
-        f = (datetime.datetime.now() - datetime.timedelta(days=29)).strftime('%Y-%m-%d')
         to = datetime.datetime.now().strftime('%Y-%m-%d')
         url=(
             f'https://newsapi.org/v2/everything?'
@@ -792,7 +797,7 @@ class Finance_business:
         
         while True :
             if(len(wired_articles)%10 == 0):
-                print(f"number of articles retrieved so far is : {len(wired_articles)}")
+                print(f"number of articles retrieved from the wired so far is : {len(wired_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -866,7 +871,7 @@ class Finance_business:
 
         while True:
             if len(usa_today_articles) % 10 == 0:
-                print(f"Number of articles retrieved so far is: {len(usa_today_articles)}")
+                print(f"Number of articles retrieved from USA TODAY so far is: {len(usa_today_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -936,10 +941,10 @@ class Finance_business:
         consecutive_same_articles = 0  # Track consecutive iterations with same article count
 
         while True:
+            if len(ambcrypto_articles) % 10 == 0:
+                print(f"Number of articles retrieved so far from ambcrypto is: {len(ambcrypto_articles)} ...")
             response = requests.get(url)
             if response.status_code == 200:
-                if len(ambcrypto_articles) % 10 == 0:
-                    print(f"Number of articles retrieved so far is: {len(ambcrypto_articles)} ...")
                 data = response.json()
                 articles = data.get('articles', [])
                 previous_article_count = len(ambcrypto_articles)
@@ -1007,10 +1012,10 @@ class Finance_business:
         consecutive_same_articles = 0  # Track consecutive iterations with same article count
 
         while True:
+            if len(business_insider_articles) % 10 == 0:
+                print(f"Number of articles retrieved so far from Business Insider is: {len(business_insider_articles)} ...")
             response = requests.get(url)
             if response.status_code == 200:
-                if len(business_insider_articles) % 10 == 0:
-                    print(f"Number of articles retrieved so far is: {len(business_insider_articles)} ...")
                 data = response.json()
                 articles = data.get('articles', [])
                 previous_article_count = len(business_insider_articles)
@@ -1086,7 +1091,7 @@ class Finance_business:
             response = requests.get(url)
             if response.status_code == 200:
                 if len(readwrite_articles) % 10 == 0:
-                    print(f"Number of articles retrieved so far is: {len(readwrite_articles)} ...")
+                    print(f"Number of articles retrieved so far from readwrite is: {len(readwrite_articles)} ...")
                 data = response.json()
                 articles = data.get('articles', [])
                 previous_article_count = len(readwrite_articles)
