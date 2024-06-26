@@ -29,9 +29,9 @@ class Finance_business:
         self.gnews_api_key = gnews_api_key # GNews API key
         self.duplicates_seuil = 100 # threshold for number of duplicate articles
         self.max_consecutive_same_articles = 4 # threshold for number of consecutive same articles
-        # self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') # start date for fetching news articles
+        self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') # start date for fetching news articles
       
-        self.from_date = (datetime.datetime.now() - datetime.timedelta(hours=12)).strftime('%Y-%m-%d') # start date for fetching news articles
+        # self.from_date = (datetime.datetime.now() - datetime.timedelta(hours=12)).strftime('%Y-%m-%d') # start date for fetching news articles
     
 # ==============================================================================================================================================
 # ============================================== ALPHA VANTAGE API ===========================================================================================

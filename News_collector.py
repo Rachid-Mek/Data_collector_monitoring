@@ -16,8 +16,8 @@ class News_collector: # Class to collect news articles from different sources
         self.newsapi_key = newsapi_key  # News API key
         self.duplicates_seuil=100 # maximum number of duplicate articles
         self.max_consecutive_same_articles=4 # maximum number of consecutive same articles
-        # self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') # start date for fetching news articles
-        self.from_date = (datetime.datetime.now() - datetime.timedelta(hours=12)).strftime('%Y-%m-%d') # start date for fetching news articles
+        self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') # start date for fetching news articles
+        # self.from_date = (datetime.datetime.now() - datetime.timedelta(hours=12)).strftime('%Y-%m-%d') # start date for fetching news articles
 
 
     
