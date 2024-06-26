@@ -43,7 +43,7 @@ class News_collector: # Class to collect news articles from different sources
         consecutive_same_articles = 0
         while True:
             if len(collected_articles) % 10 == 0: 
-                print(f"Number of collected documents so far are : {len(collected_articles)} ....")
+                print(f"Number of collected documents so far from the guardian are : {len(collected_articles)} ....")
             response = requests.get(self.endpoint, self.params)
             data = response.json() 
             articles = data['response']['results']
@@ -82,7 +82,7 @@ class News_collector: # Class to collect news articles from different sources
         consecutive_same_articles = 0
         while True:
             if len(bbc_articles) % 10 == 0:
-                print(f"number of articles retrieved so far is : {len(bbc_articles)}")
+                print(f"number of articles retrieved so far from bbc news is : {len(bbc_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -132,6 +132,8 @@ class News_collector: # Class to collect news articles from different sources
             rep=0
             consecutive_same_articles = 0
             while True :
+                if len(aljaz_articles) % 10 == 0:
+                    print(f"number of articles retrieved so far from al jazeera news is : {len(aljaz_articles)}")
                 response = requests.get(url)
                 if response.status_code == 200 and response.json().get('totalResults', 0) > 0:
                     data = response.json()
@@ -215,7 +217,7 @@ class News_collector: # Class to collect news articles from different sources
                 consecutive_same_articles = 0
                 while True :
                     if len(abc_articles) % 10 == 0:
-                        print(f"number of articles retrieved so far is : {len(abc_articles)}")
+                        print(f"number of articles retrieved so far from abc news is : {len(abc_articles)}")
                     response = requests.get(url)
                     if response.status_code == 200:
                         data = response.json()
@@ -285,7 +287,7 @@ class News_collector: # Class to collect news articles from different sources
         count_duplicates_per_request=0
         consecutive_same_articles = 0
         while True  :
-            print(f"number of articles retrieved so far is : {len(abc_au_articles)}")
+            print(f"number of articles retrieved so far from abc news au is : {len(abc_au_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -352,7 +354,7 @@ class News_collector: # Class to collect news articles from different sources
             return None
 # =========================================================================================================================================
 # =========================================== CNN NEWS ================================================================================================
-    def get_cnn_news(self ):
+    def get_cnn_news(self):
         to = datetime.datetime.now().strftime('%Y-%m-%d')
         url = ( 'https://newsapi.org/v2/everything?'
                 'sources=cnn&'
@@ -368,7 +370,7 @@ class News_collector: # Class to collect news articles from different sources
         consecutive_same_articles = 0
         while True:
             response = requests.get(url)
-            print(f"number of articles retrieved so far is : {len(cnn_articles)}")
+            print(f"number of articles retrieved so far from cnn news is : {len(cnn_articles)}")
             if response.status_code == 200:
                 articles = response.json()['articles']
                 previous_article_count = len(cnn_articles)
@@ -385,7 +387,7 @@ class News_collector: # Class to collect news articles from different sources
                         continue
                 if previous_article_count == len(cnn_articles):
                     consecutive_same_articles += 1
-                if consecutive_same_articles >= self.max_consecutive_same_articles:  # Replace with desired threshold
+                if consecutive_same_articles >= self.max_consecutive_same_articles:  
                     break
                 if count_duplicates_per_request>self.duplicates_seuil:
                     print(f"Number of duplicate articles retrieved from cnn news source is : {count_duplicates_per_request} , breaking ...")
@@ -415,7 +417,7 @@ class News_collector: # Class to collect news articles from different sources
         count_duplicates_per_request=0
         consecutive_same_articles = 0
         while True:
-            print(f"number of articles retrieved so far is : {len(fox_articles)}")
+            print(f"number of articles retrieved so far from fox news is : {len(fox_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -492,7 +494,7 @@ class News_collector: # Class to collect news articles from different sources
         count_duplicates_per_request=0
         consecutive_same_articles = 0
         while True:
-            print(f"number of articles retrieved so far is : {len(washington_articles)}")
+            print(f"number of articles retrieved so far from washington post is : {len(washington_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -566,6 +568,9 @@ class News_collector: # Class to collect news articles from different sources
         count_duplicates_per_request=0
         consecutive_same_articles = 0
         while True:
+            if len(npr_articles) % 10 == 0:
+                print(f"number of articles retrieved so far from bbc news is : {len(npr_articles)}")
+
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -652,6 +657,8 @@ class News_collector: # Class to collect news articles from different sources
         consecutive_same_articles = 0
 
         while True:
+            if len(ap_articles) % 10 == 0:
+                print(f"number of articles retrieved so far from bbc news is : {len(ap_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -743,7 +750,8 @@ class News_collector: # Class to collect news articles from different sources
         consecutive_same_articles = 0
 
         while True:
-            print(f"number of articles retrieved so far is : {len(newyork_articles)}")
+            if len(newyork_articles) % 10 == 0:
+                print(f"number of articles retrieved so far from newyork post is : {len(newyork_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -813,7 +821,7 @@ class News_collector: # Class to collect news articles from different sources
         consecutive_same_articles = 0
         while True:
             if len(usa_today_articles) % 10 == 0:
-                print(f"number of articles retrieved so far is : {len(usa_today_articles)}")
+                print(f"number of articles retrieved so far from usa today is : {len(usa_today_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
@@ -886,7 +894,7 @@ class News_collector: # Class to collect news articles from different sources
         consecutive_same_articles = 0
         while True:
             if len(usa_today_articles) % 10 == 0:
-                print(f"Number of articles retrieved so far is: {len(usa_today_articles)}")
+                print(f"Number of articles retrieved so far from sky news is: {len(usa_today_articles)}")
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
