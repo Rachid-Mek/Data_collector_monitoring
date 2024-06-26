@@ -18,7 +18,7 @@ def highlight_rows(row):
     elif row['downvote'] == 1:
         return ['background-color: #CE3030'] * len(row)
     elif row['flag'] == 1:
-        return ['background-color: lightyellow'] * len(row)
+        return ['background-color: yellow'] * len(row)
     return ['background-color: black'] * len(row)
 # =============================================================================
 # # the function to set the background image of the page
@@ -153,7 +153,6 @@ def sidebar():
         else:
             Accuracy = 0 # Set the accuracy to 0 if the total votes is 0
         qa_df = qa_df.apply(compute_entailment_score, axis=1) # Compute the entailment score
-        avg_entailment_score = qa_df['Entailment'].mean() # Compute the average entailment score
         # avg_entailment_score = qa_df['Entailment'].mean() # Compute the average entailment score
 
         avg_entailment_score = qa_df[qa_df['Entailment'] > 0.2]['Entailment'].mean() # Compute the average entailment score for values that are greater than 0.2
