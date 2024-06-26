@@ -145,7 +145,7 @@ def sidebar():
             st.write(f'No data available for the selected source: {selected_source}') # Show a message that there is no data available for the selected source
 # =============================================================================
     elif st.session_state['view'] == 'QA': # Check if the view is QA
-        st.title('Generation model\'s Q&A Tracking ') # Set the title of the page
+        st.title('Generation model\'s Q&A Tracking') # Set the title of the page
         qa_df = get_qa() # Get the Q&A data
         total_votes = qa_df['upvote'].sum() + qa_df['downvote'].sum() # Compute the total votes
         if total_votes > 0: # Check if the total votes is greater than 0
@@ -153,6 +153,7 @@ def sidebar():
         else:
             Accuracy = 0 # Set the accuracy to 0 if the total votes is 0
         qa_df = qa_df.apply(compute_entailment_score, axis=1) # Compute the entailment score
+        avg_entailment_score = qa_df['Entailment'].mean() # Compute the average entailment score
         # avg_entailment_score = qa_df['Entailment'].mean() # Compute the average entailment score
 
         avg_entailment_score = qa_df[qa_df['Entailment'] > 0.2]['Entailment'].mean() # Compute the average entailment score for values that are greater than 0.2
