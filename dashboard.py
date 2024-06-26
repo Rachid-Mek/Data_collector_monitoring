@@ -154,7 +154,7 @@ def sidebar():
             Accuracy = 0 # Set the accuracy to 0 if the total votes is 0
         qa_df = qa_df.apply(compute_entailment_score, axis=1) # Compute the entailment score
         # avg_entailment_score = qa_df['Entailment'].mean() # Compute the average entailment score
-        # compute mean for values that are >0.2
+
         avg_entailment_score = qa_df[qa_df['Entailment'] > 0.2]['Entailment'].mean() # Compute the average entailment score for values that are greater than 0.2
         number_of_flags = qa_df['flag'].sum() # Compute the number of flags
 
