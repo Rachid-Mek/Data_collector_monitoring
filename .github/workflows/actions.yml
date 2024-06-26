@@ -1,0 +1,26 @@
+name: run collector.py
+
+on:
+  schedule:
+    - cron: "0 09 * * *" # run the script every day at 09:00 AM UTC time
+    - cron: "0 21 * * *" # run the script every day at 09:00 PM UTC time
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12.1" # install the python version needed
+
+      - name: install python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: execute py script # run collector.py
+        run: python collector.py
