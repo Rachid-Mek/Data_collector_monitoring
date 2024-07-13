@@ -1,78 +1,42 @@
-import requests # for sending HTTP requests
-from bs4 import BeautifulSoup #  for web scraping
-import time # for time.sleep
-import re # for regular expressions
-import datetime # for date and time
-from Helpers import remove_tags , process_articles # for removing html tags and processing articles
+import requests
+from bs4 import BeautifulSoup 
+import time 
+import re 
+import datetime 
+from Helpers import remove_tags , process_articles 
 
 # ==============================================================================================================================================
 class Finance_business: 
     def __init__(self, guardian_api_key, alphavantage_api_key, newsapi_key, gnews_api_key):
-        '''
-        This class is responsible for fetching news articles from finance and business sources
-
-        Parameters:
-        ----------
-        guardian_api_key : str
-            The Guardian API key
-        alphavantage_api_key : str
-            The Alpha Vantage API key
-        newsapi_key : str
-            The News API key
-        gnews_api_key : str
-            The GNews API key
         
-        '''
-        self.guardian_api_key = guardian_api_key # Guardian API key 
-        self.alphavantage_api_key = alphavantage_api_key # Alpha Vantage API key
-        self.newsapi_key = newsapi_key # News API key
-        self.gnews_api_key = gnews_api_key # GNews API key
-        self.duplicates_seuil = 100 # threshold for number of duplicate articles
-        self.max_consecutive_same_articles = 4 # threshold for number of consecutive same articles
-        self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') # start date for fetching news articles
-      
-        # self.from_date = (datetime.datetime.now() - datetime.timedelta(hours=12)).strftime('%Y-%m-%d') # start date for fetching news articles
+        self.guardian_api_key = guardian_api_key  
+        self.alphavantage_api_key = alphavantage_api_key 
+        self.newsapi_key = newsapi_key 
+        self.gnews_api_key = gnews_api_key 
+        self.duplicates_seuil = 100 
+        self.max_consecutive_same_articles = 4 
+        self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') 
     
-# ==============================================================================================================================================
-# ============================================== ALPHA VANTAGE API ===========================================================================================
-
-    def fetch_alphavantage_news(self): # Alpha vantage API for finance news
-        '''
-        This function fetches finance news articles from the Alpha Vantage API 
-        '''
-        finance_news = [] # list to store finance news articles
-        url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=FOREX:USD&apikey={self.alphavantage_api_key}' # url to fetch finance news
-        response = requests.get(url) # send a GET request to the url
-        if response.status_code==200: # if the response is successful
-            data = response.json() # parse the response as json
-            try:
-                feeds = data['feed'] # get the feed data
-                for feed in feeds: # loop through the feeds
-                    finance_news.append({'title': feed['title'], 'content': self.remove_tags(feed['summary'])}) # append the title and content of the feed to the finance_news list
-                time.sleep(1) # sleep for 1 second
-            except(Exception):  # handle exceptions
-                print("Error: Failed to retrieve finance news") # print error message
-        return process_articles(finance_news) # return the processed finance news articles
     
 # ==============================================================================================================================================
 # ========================================= FORTUNE NEWS ================================================================================================
     
     def fetch_fortune_news(self): # Fortune API for finance news
-        fortune_articles = [] # list to store fortune news articles
-        topic = 'business' # topic of the news
-        source = 'fortune' # source of the news
-        to = datetime.datetime.now().strftime('%Y-%m-%d') # end date of the news
+        fortune_articles = [] 
+        topic = 'business' 
+        source = 'fortune'
+        to = datetime.datetime.now().strftime('%Y-%m-%d') 
         url = f'https://newsapi.org/v2/everything?q={topic}&from={self.from_date}&to={to}&sources={source}&language=en&sortBy=popularity&pageSize=100&apiKey={self.newsapi_key}'
-        publish_dates = set()  # to avoid duplicate articles
-        count_duplicates_per_request = 0 # Track number of duplicate articles per request
-        consecutive_same_articles = 0 # Track consecutive iterations with same article count
+        publish_dates = set() 
+        count_duplicates_per_request = 0 
+        consecutive_same_articles = 0
 
         while True:
-            if len(fortune_articles) % 10 == 0: # Print number of articles retrieved so far
+            if len(fortune_articles) % 10 == 0:
                 print(f"number of articles retrieved so far from fortune is : {len(fortune_articles)}") # print message to console 
-            response = requests.get(url) # send a GET request to the url
-            if response.status_code == 200: # if the response is successful
-                data = response.json() # parse the response as json
+            response = requests.get(url) 
+            if response.status_code == 200: 
+                data = response.json() 
                 articles = data.get('articles', []) # get the articles data
                 previous_article_count = len(fortune_articles) # Store previous article count
                 for article in articles: # loop through the articles

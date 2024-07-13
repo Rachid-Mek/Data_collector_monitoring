@@ -7,23 +7,17 @@ from Helpers import remove_tags, process_articles
 
 # ==============================================================================================================================================
 
-class News_collector: # Class to collect news articles from different sources
+class News_collector:
     def __init__(self, guardian_api_key, newsapi_key): 
-        '''
-        This function initializes the class with the guardian api key and news api key
-        '''
-        self.guardian_api_key = guardian_api_key  # Guardian API key
-        self.newsapi_key = newsapi_key  # News API key
-        self.duplicates_seuil=100 # maximum number of duplicate articles
-        self.max_consecutive_same_articles=4 # maximum number of consecutive same articles
-        self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') # start date for fetching news articles
-        # self.from_date = (datetime.datetime.now() - datetime.timedelta(hours=12)).strftime('%Y-%m-%d') # start date for fetching news articles
+        self.guardian_api_key = guardian_api_key  
+        self.newsapi_key = newsapi_key 
+        self.duplicates_seuil=100
+        self.max_consecutive_same_articles=4
+        self.from_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') 
+        
 
 
-    
-# ==============================================================================================================================================
 # ============================================== GUARDIAN API ===========================================================================================
-    # Function to fetch news articles from the Guardian API
     def fetch_guardian_news(self):
         ''' 
         This function fetches news articles from the guardian api
